@@ -52,3 +52,57 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Visual Studio specific files and folders
+.vs/
+vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio Code specific
+.vscode/
+
+# Visual Studio IntelliCode
+.intellisense/
+
+# Copilot indices and file content index
+**/CopilotIndices/
+**/FileContentIndex/
+
+# Application host config
+**/applicationhost.config
+
+# Document layout files
+**/DocumentLayout*.json
+
+# Semantic symbols
+**/SemanticSymbols*
+
+# Other Visual Studio temp files
+*.tmp
+*.temp
+*.cache
+*.vsidx
+*.vspscc
+*.vssscc
+.builds/
+*.pidb
+*.svclog
+*.scc
+
+# Resharper
+*ReSharper*/
+*.DotSettings.user
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
