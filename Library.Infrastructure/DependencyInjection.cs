@@ -1,5 +1,7 @@
-﻿using Library.Infrastructure.Data;
+﻿using Library.Domain.Interfaces;
+using Library.Infrastructure.Data;
 using Library.Infrastructure.Data.Seeders;
+using Library.Infrastructure.Repositories;
 
 namespace Library.Infrastructure
 {
@@ -32,6 +34,8 @@ namespace Library.Infrastructure
                 options.EnableDetailedErrors(false);
                 options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services
                 .AddHealthChecks()
