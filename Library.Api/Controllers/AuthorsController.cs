@@ -1,10 +1,12 @@
-﻿namespace Library.Api.Controllers
+﻿using Library.Application.Features.Authors.Commands.CreateAuthor;
+
+namespace Library.Api.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Produces("application/json")]
-    public class AuthorsController : ControllerBase
+    public class AuthorsController(IMediator mediator) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,9 +32,33 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromBody] CreateAuthorRequest request)
         {
-            return Created();
+            var command = new CreateAuthorCommand
+            (
+                request.FirstName,
+                request.LastName,
+                request.DateOfBirth,
+                request.Nationality,
+                request.Biography
+            );
+
+            var result = await mediator.Send(command);
+
+            var response = result.Match<IActionResult>
+            (
+                success => CreatedAtAction
+                (
+                    nameof(GetById),
+                    new { id = result.Value!.Id },
+                    result.Value
+                ),
+                error => result.ValidationErrors.Length > 0
+                    ? BadRequest(new { result.Error, result.ValidationErrors })
+                    : Conflict(new { result.Error })
+            );
+
+            return response;
         }
 
         [HttpPut("{id}")]
