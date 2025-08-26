@@ -37,10 +37,6 @@ namespace Library.Infrastructure
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            services
-                .AddHealthChecks()
-                .AddDbContextCheck<ApplicationDbContext>();
-
             return services;
         }
 
