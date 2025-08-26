@@ -34,6 +34,12 @@
                     Version = "v1.0",
                     Description = "API para gestión de librería - Autores, Libros, Miembros y Préstamos"
                 });
+                c.CustomSchemaIds(type => type.FullName);
+                c.MapType<DateTime>(() => new OpenApiSchema
+                {
+                    Type = "string",
+                    Format = "date-time"
+                });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
