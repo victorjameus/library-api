@@ -1,4 +1,5 @@
 ﻿using Library.Application.Features.Authors.Commands.CreateAuthor;
+using Library.Application.Features.Authors.Commands.DeleteAuthor;
 
 namespace Library.Api.Controllers
 {
@@ -79,7 +80,18 @@ namespace Library.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            return NoContent();
+            var command = new DeleteAuthorCommand(id);
+            var result = await mediator.Send(command);
+
+            var response = result.Match<IActionResult>
+            (
+                NoContent,
+                error => error.Contains("no existe")
+                    ? NotFound(new { result.Error })
+                    : Conflict(new { result.Error })
+            );
+
+            return response;
         }
     }
 }

@@ -47,6 +47,20 @@
                 : onFailure(Error);
         }
 
+        public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<string, string[], TResult> onFailure)
+        {
+            return IsSuccess
+                ? onSuccess(Value!)
+                : onFailure(Error, ValidationErrors);
+        }
+
+        public TResult Match<TResult>(Func<TResult> onSuccess, Func<string, TResult> onFailure)
+        {
+            return IsSuccess
+                ? onSuccess()
+                : onFailure(Error);
+        }
+
         public async Task<TResult> MatchAsync<TResult>(Func<T, Task<TResult>> onSuccess, Func<string, Task<TResult>> onFailure)
         {
             return IsSuccess
@@ -120,6 +134,27 @@
                 : Result<T>.Failure(Error);
         }
 
+        public TResult Match<TResult>(Func<TResult> onSuccess, Func<string, TResult> onFailure)
+        {
+            return IsSuccess
+                ? onSuccess()
+                : onFailure(Error);
+        }
+
+        public TResult Match<TResult>(Func<TResult> onSuccess, Func<string, string[], TResult> onFailure)
+        {
+            return IsSuccess
+                ? onSuccess()
+                : onFailure(Error, ValidationErrors);
+        }
+
+        public async Task<TResult> MatchAsync<TResult>(Func<Task<TResult>> onSuccess, Func<string, Task<TResult>> onFailure)
+        {
+            return IsSuccess
+                ? await onSuccess()
+                : await onFailure(Error);
+        }
+
         public override string ToString()
         {
             return IsSuccess
@@ -161,6 +196,26 @@
             return result;
         }
 
+        public static Result OnSuccess(this Result result, Action action)
+        {
+            if (result.IsSuccess)
+            {
+                action();
+            }
+
+            return result;
+        }
+
+        public static Result OnFailure(this Result result, Action<string> action)
+        {
+            if (result.IsFailure)
+            {
+                action(result.Error);
+            }
+
+            return result;
+        }
+
         public static Result Combine(params Result[] results)
         {
             var failures = results.Where(r => r.IsFailure).ToArray();
@@ -173,6 +228,20 @@
             var errors = failures.SelectMany(failures => failures.ValidationErrors.Length > 0 ? failures.ValidationErrors : [failures.Error]);
 
             return Result.ValidationFailure(errors);
+        }
+
+        public static Result<T[]> Combine<T>(params Result<T>[] results)
+        {
+            var failures = results.Where(r => r.IsFailure).ToArray();
+
+            if (failures.Length == 0)
+            {
+                var values = results.Select(r => r.Value!).ToArray();
+                return Result<T[]>.Success(values);
+            }
+
+            var errors = failures.SelectMany(f => f.ValidationErrors.Length > 0 ? f.ValidationErrors : [f.Error]);
+            return Result<T[]>.ValidationFailure(errors);
         }
     }
 }

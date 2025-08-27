@@ -1,6 +1,6 @@
-﻿namespace Library.Application.Features.Authors.Commands.DeleteAuthor
+﻿using Library.Application.Common.Models;
+
+namespace Library.Application.Features.Authors.Commands.DeleteAuthor
 {
-    internal class DeleteAuthorCommand
-    {
-    }
+    public sealed record DeleteAuthorCommand(int Id) : IRequest<Result>;
 }

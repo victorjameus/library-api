@@ -1,7 +1,7 @@
 ﻿using Library.Application.Common.DTOs;
-using Library.Application.Common.Extensions;
 using Library.Application.Common.Models;
 using Library.Domain.Entities;
+using Library.Domain.Enums;
 using Library.Domain.Interfaces;
 
 namespace Library.Application.Features.Authors.Commands.CreateAuthor
@@ -18,10 +18,7 @@ namespace Library.Application.Features.Authors.Commands.CreateAuthor
             {
                 logger.LogInformation("Creando nuevo autor: {FirstName} {LastName}", request.FirstName, request.LastName);
 
-                var exists = await authors
-                    .AsQuery()
-                    .AsNoTracking()
-                    .AnyAsync(a => a.FirstName == request.FirstName && a.LastName == request.LastName, ct);
+                var exists = await authors.ExistsAsync(a => a.FirstName == request.FirstName && a.LastName == request.LastName, ct);
 
                 if (exists)
                 {
@@ -38,9 +35,7 @@ namespace Library.Application.Features.Authors.Commands.CreateAuthor
                     Biography = request.Biography?.Trim()
                 };
 
-                var created = await authors
-                    .AddAsync(author, ct)
-                    .Clear();
+                var created = await authors.AddAsync(author, Tracking.Clear, ct);
 
                 logger.LogInformation("Autor creado exitosamente con ID: {AuthorId} - {FullName}", created.Id, created.GetFullName());
                 var authorDto = AuthorDto.FromEntity(created);
