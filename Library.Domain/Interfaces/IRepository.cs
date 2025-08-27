@@ -1,26 +1,17 @@
 ﻿using Library.Domain.Entities;
+using Library.Domain.Enums;
 
 namespace Library.Domain.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        /// <summary>
-        /// Obtiene un IQueryable para consultas LINQ
-        /// </summary>
-        /// <returns>IQueryable para construir consultas</returns>
         IQueryable<T> AsQuery();
-
-        /// <summary>
-        /// Agrega una entidad y la persiste inmediatamente
-        /// </summary>
-        /// <param name="entity">Entidad a agregar</param>
-        /// <param name="ct">Token de cancelación</param>
-        /// <returns>Resultado que permite encadenar operaciones</returns>
-        Task<IRepositoryResult<T>> AddAsync(T entity, CancellationToken ct = default);
-
-        /// <summary>
-        /// Limpia el change tracker para liberar memoria
-        /// </summary>
-        void Clear();
+        Task<T?> FindAsync(int id, CancellationToken ct = default);
+        Task<bool> HasRelatedAsync<TRelated>(int id, Expression<Func<T, ICollection<TRelated>>> relations, CancellationToken ct = default);
+        Task<T> AddAsync(T entity, CancellationToken ct = default);
+        Task<T> AddAsync(T entity, Tracking trackingBehavior, CancellationToken ct = default);
+        Task<int> UpdateAsync(int id, Action<T> updateAction, CancellationToken ct = default);
+        Task<int> DeleteAsync(int id, CancellationToken ct = default);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default);
     }
 }
